@@ -35,13 +35,13 @@ jobs:
             cd backend || exit
             source venv/bin/activate
             [ -f requirements.txt ] && pip install -r requirements.txt || echo "requirements.txt missing!"
-            sudo -S systemctl restart flask <<< "${{ secrets.SUDO_PASSWORD }}"
-      
+            echo "${{ secrets.SUDO_PASSWORD }}" | sudo -S systemctl restart flask
+            
             # Frontend: Fix Permissions & Rebuild React
             cd ../frontend || exit
             sudo chmod -R 777 dist
             npm install
             npm run build || echo "Frontend build failed!"
-      
+            
             # Restart NGINX
-            sudo -S systemctl restart nginx <<< "${{ secrets.SUDO_PASSWORD }}"
+            echo "${{ secrets.SUDO_PASSWORD }}" | sudo -S systemctl restart nginx
