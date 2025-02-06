@@ -1,41 +1,21 @@
-// This is the template file from Vite. We can change this at will.
-import { useState } from 'react'
-import './App.css'
-import { useEffect } from 'react';
+import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
+import Navbar from "./components/Navbar";
+import Home from "./pages/Home";
+import About from "./pages/About";
+import Contact from "./pages/Contact";
+import "./App.css";
 
 function App() {
-  const [data, setdata] = useState({
-    name: ""
-  });
-  const [count, setCount] = useState(0);
-
-
-  useEffect(() => {
-    // Using fetch to fetch the api from 
-    // flask server it will be redirected to proxy
-    fetch("/api").then((res) => console.log(res));
-    fetch("/api").then((res) =>
-        res.json().then((data) => {
-            // Setting a data from api
-            setdata({
-                name: data.Name
-            });
-        })
-    );
-  }, []);
-
   return (
-    <>
-      <p></p>
-      <h1>Hello World!</h1>
-      <div className="card">
-        <button onClick={() => setCount((count) => count + 1)}>
-          count is {count}
-        </button>
-      </div>
-      <p>{data.name}</p>
-    </>
-  )
+    <Router>
+      <Navbar />
+      <Routes>
+        <Route path="/" element={<Home />} />
+        <Route path="/about" element={<About />} />
+        <Route path="/contact" element={<Contact />} />
+      </Routes>
+    </Router>
+  );
 }
 
-export default App
+export default App;
