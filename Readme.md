@@ -47,13 +47,14 @@ Welcome to **DraftEmpire** – a sports fantasy platform focused on **college fo
    cd 496-Project/backend
    ```
 2. **Create a virtual environment & activate it:**
-   Windows:
+
+    *Windows:* 
       ```bash
       py -m venv venv
       # Activate virtual env
       venv/scripts/activate
       ```
-   macOS/Linux:
+   *macOS/Linux:*
       ```bash
       python3 -m venv venv
       source venv/bin/activate
@@ -63,11 +64,12 @@ Welcome to **DraftEmpire** – a sports fantasy platform focused on **college fo
    pip install -r requirements.txt
    ```
 5. **Run Flask locally:**
-   Windows:
+
+   *Windows:*
       ```bash
       flask --app server.py run
       ```
-   macOS/Linux:
+   *macOS/Linux:*
       ```bash
       flask run --host=0.0.0.0 --port=5000
       ```
