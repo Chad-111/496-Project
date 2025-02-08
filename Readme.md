@@ -43,21 +43,36 @@ Welcome to **DraftEmpire** – a sports fantasy platform focused on **college fo
 1. **Clone the repo:**
    ```bash
    git clone https://github.com/Chad-111/496-Project.git
+   # Go into backend ;)
    cd 496-Project/backend
    ```
 2. **Create a virtual environment & activate it:**
-   ```bash
-   python3 -m venv venv
-   source venv/bin/activate
-   ```
-3. **Install dependencies:**
+
+    *Windows:* 
+      ```bash
+      py -m venv venv
+      # Activate virtual env
+      venv/scripts/activate
+      ```
+   *macOS/Linux:*
+      ```bash
+      python3 -m venv venv
+      source venv/bin/activate
+      ```
+4. **Install dependencies:**
    ```bash
    pip install -r requirements.txt
    ```
-4. **Run Flask locally:**
-   ```bash
-   flask run --host=0.0.0.0 --port=5000
-   ```
+5. **Run Flask locally:**
+
+   *Windows:*
+      ```bash
+      flask --app server.py run
+      ```
+   *macOS/Linux:*
+      ```bash
+      flask run --host=0.0.0.0 --port=5000
+      ```
 
 ### **Frontend Setup**
 1. **Go to the frontend directory:**
