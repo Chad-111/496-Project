@@ -1,6 +1,6 @@
-# Project Title
+# Draft Empire [CS 496 Semester Project]
 
-A brief description of what this project does and who it's for.
+Check if there are newer branches that have more recent pushes than the master branch before working so you can stay up to date with the latest version!
 
 ## Installation
 
@@ -8,28 +8,20 @@ Instructions on how to install and set up the project.
 
 ```bash
 # Clone the repository
-git clone https://github.com/yourusername/your-repo.git
+git clone https://github.com/chad-111/496-Project/
 
 # Navigate to the project directory
-cd your-repo
+cd 496-Project
 
-# Install dependencies
-npm install
+# Install dependencies while you are in the 496-Project DIR
+pip -r install requirements.txt
 ```
 
 ## Usage
 
-Instructions on how to use the project.
+Once more work is completed, we will update this section on how to run the project.
 
 ```bash
 # Run the project
-npm start
+# Command to run goes here...
 ```
-
-## Contributing
-
-Guidelines for contributing to the project.
-
-## License
-
-Information about the project's license.
