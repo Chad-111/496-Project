@@ -8,7 +8,7 @@ Instructions on how to install and set up the project.
 
 ```bash
 # Clone the repository
-git clone https://github.com/chad-111/496-Project/
+git clone https://github.com/Chad-111/496-Project.git
 
 # Navigate to the project directory
 cd 496-Project
