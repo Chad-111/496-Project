@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Admin Dashboard</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 20px;
+        }
+
+        pre {
+            background: #222;
+            color: #0f0;
+            padding: 10px;
+            overflow-x: auto;
+        }
+
+        .logout {
+            float: right;
+        }
+    </style>
+    <script>
+        async function fetchLogs(endpoint, elementId) {
+            try {
+                const response = await fetch(endpoint);
+                const data = await response.json();
+                document.getElementById(elementId).innerText = JSON.stringify(data, null, 2);
+            } catch (error) {
+                document.getElementById(elementId).innerText = "Error loading logs.";
+            }
+        }
+
+        function refreshLogs() {
+            fetchLogs("/admin/ngrok_status", "ngrok_status");
+            fetchLogs("/admin/apache_access_logs", "apache_access_logs");
+            fetchLogs("/admin/apache_error_logs", "apache_error_logs");
+        }
+
+        setInterval(refreshLogs, 5000);
+        window.onload = refreshLogs;
+    </script>
+</head>
+
+<body>
+    <div>
+        <a href="/admin/logout" class="logout">Logout</a>
+        <h1>Admin Dashboard</h1>
+
+        <h2>Ngrok Status</h2>
+        <pre id="ngrok_status">Loading...</pre>
+
+        <h2>Apache Access Logs</h2>
+        <pre id="apache_access_logs">Loading...</pre>
+
+        <h2>Apache Error Logs</h2>
+        <pre id="apache_error_logs">Loading...</pre>
+    </div>
+</body>
+
+</html>
