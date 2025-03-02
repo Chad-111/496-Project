@@ -7,21 +7,15 @@ A webhook is an automated system that listens for events (such as a commit) and 
 Configured in GitHub to send POST requests to our server whenever a commit is pushed. <br>
 The webhook URL is dynamically updated via Ngrok to ensure GitHub can always reach our machine.<br>
 
-### Ngrok Tunnel:
+### Ngrok Tunnel [`start_ngrok.bat`](docs/start_ngrok.bat):
 Since we host the server locally (on my PC), Ngrok exposes our webhook listener to the internet with a secure public URL. <br>
 The webhook dynamically updates its URL in GitHub whenever Ngrok restarts.<br>
 
-### Python Webhook Listener:
+### Python Webhook Listener [`webhook_listener.py`](docs/webhook_listener.py):
 Runs on our machine and listens for GitHub webhook events. <br>
 When a push is detected on the master branch, it triggers our deployment script. <br>
-Functions inside script:
-> `def get_ngrok_url():`
-> - **Fetch the current Ngrok public URL**
 
-> `def update_github_webhook():`
-> - **Update GitHub Webhook to use the latest Ngrok URL**
-
-### Deployment Script (`update_project.bat`)
+### Deployment Script [`update_project.bat`](docs/update_project.bat)
 Automatically pulls the latest code. <br>
 Installs new dependencies if needed. <br>
 Builds the frontend and deploys it to the Apache server. <br>
