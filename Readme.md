@@ -7,8 +7,8 @@
 │   │-- src/   # Source code for the React app
 │   │-- public/ # Static assets (HTML, icons, etc.)
 │   │-- package.json  # Dependencies & scripts
-│-- backend/   # (If applicable) Backend server
-│-- docs/      # Documentation & project guidelines
+│-- backend/   # Backend server
+│-- docs/      # Documentation & project guidelines **NOT CREATED YET**
 │-- README.md  # This document
 ```
 _________________
@@ -44,18 +44,18 @@ git checkout -b branch-name # Replace <branch-name> with whatever you want
 ```
 ### 2. Make Changes
 Modify the necessary files in the `frontend/` or `backend/` directory </br>
-> **React** <mark>*Frontend*</mark>
+**React** <mark>*Frontend*</mark>
 ```bash
 cd frontend
 npm start # Runs the app locally for testing
 ```
-> **Flask (Python)** <mark>*Backend*</mark>
+**Flask (Python)** <mark>*Backend*</mark>
 ```bash
 cd backend
-python app.py # Runs the backend server
+python server.py # Runs the backend server
 ```
 ### 3. Commit & Push Changes
-After making changes, commit and push your branch to `master`
+**After making changes, commit and push your branch to `master`**
 ```bash
 git add .
 git commit -m "Added new feature"
