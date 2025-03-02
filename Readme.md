@@ -77,4 +77,4 @@ Changes go live instantly! </br>
 _________________
 
 ## For Help, Refer to These Links
-[WTF is a Webhook?](https://github.com/Chad-111/496-Project/blob/837252fc9fd0ddb2e43b1d3cb92622983a946123/docs/WTF%20is%20a%20webhook%3F.md)
+[WTF is a Webhook?](/docs/webhook.md)
