@@ -27,7 +27,7 @@ function App() {
   return (
     <>
       <p></p>
-      <h1>Hello World!</h1>
+      <h1>Hello World. This is Draft Empire!</h1>
       <div className="card">
         <button onClick={() => setCount((count) => count + 1)}>
           count is {count}
