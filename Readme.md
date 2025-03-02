@@ -8,7 +8,7 @@
 │   │-- public/ # Static assets (HTML, icons, etc.)
 │   │-- package.json  # Dependencies & scripts
 │-- backend/   # Backend server
-│-- docs/      # Documentation & project guidelines **NOT CREATED YET**
+│-- docs/      # Documentation & project guidelines
 │-- README.md  # This document
 ```
 _________________
@@ -74,3 +74,7 @@ _________________
 Once your PR is merged, the latest version is automatically pulled into the server via WebHook </br>
 The frontend is rebuilt, and the backend is restarted </br>
 Changes go live instantly! </br>
+_________________
+
+## For Help, Refer to These Links
+[WTF is a Webhook?](https://github.com/Chad-111/496-Project/blob/837252fc9fd0ddb2e43b1d3cb92622983a946123/docs/WTF%20is%20a%20webhook%3F.md)
