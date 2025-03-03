@@ -36,7 +36,7 @@ def check_task_status(task_name):
         return f"Error: {e}"
     
 @app.route("/admin/login", methods=["GET", "POST"])
-def login():
+def admin_login():
     """Handle Admin User Login"""
     if request.method == "POST":
         username = request.form["username"]
@@ -48,7 +48,7 @@ def login():
     return render_template("login.html")
 
 @app.route("/admin/logout")
-def logout():
+def admin_logout():
     """Log out user"""
     session.pop("user", None)
     return redirect(url_for("login"))
@@ -163,6 +163,27 @@ def signup():
 
     
 # Handles logins
+# Probably needs to be edited using sessions and whatnot
+@app.route('/api/login', methods=["POST"])
+def login():
+    data = request.get_json()
+    email = data.get("email")
+    password = data.get("password")
+
+    if not email or not password:
+        return jsonify({"error": "Missing required fields"}), 400
+
+    # Check if user exists
+    user = User.query.filter_by(email=email).first()
+    if not user:
+        return jsonify({"error": "Invalid email or password"}), 401
+
+    # Verify password
+    if not bcrypt.checkpw(bytes(password, encoding="utf-8"), bytes(user.password_hash[2:-1], encoding="utf-8")):
+        return jsonify({"error": "Invalid email or password"}), 401
+
+    return jsonify({"message": "Login successful", "username": user.username}), 200
+
 
 # Run App
 if __name__ == '__main__':
