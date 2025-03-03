@@ -1,8 +1,12 @@
 from flask import Flask, request, jsonify, render_template, redirect, url_for, session
 from flask_sqlalchemy import SQLAlchemy
 from flask_cors import CORS
+import bcrypt
 import requests
 import os
+import random
+
+
 import subprocess
 
 # Initialize Flask app
@@ -101,12 +105,15 @@ class User(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     username = db.Column(db.String(50), unique=True, nullable=False)
     email = db.Column(db.String(100), unique=True, nullable=False)
+    password_hash = db.Column(db.String(63), nullable=False)
 
 class League(db.Model):
     __tablename__ = 'leagues'
     id = db.Column(db.Integer, primary_key=True)
     league_name = db.Column(db.String(100), nullable=False)
     manager_id = db.Column(db.Integer, db.ForeignKey('users.id'))
+
+
 
 # API Routes
 @app.route('/api/users', methods=['GET'])
@@ -120,9 +127,48 @@ def get_leagues():
     return jsonify([{ 'id': l.id, 'league_name': l.league_name, 'manager_id': l.manager_id } for l in leagues])
 
 
+@app.route('/api/signup', methods=["POST"])
+def signup():
+    data = request.get_json()
+    email = data.get("email")
+    password = data.get("password")
+    username = data.get("username")
+    bytes = password.encode("utf-8")
+    salt = bcrypt.gensalt()
+    hash = bcrypt.hashpw(bytes, salt)
+
+    if not email or not password or not username:
+        return jsonify({"error": "Missing required fields"}), 400
+    
+
+    # Check if user already exists
+    existing_user = User.query.filter((User.email == email) | (User.username == username)).first()
+    if existing_user:
+        return jsonify({"error": "User already exists"}), 400
+
+    
+    
+    new_user = User(username=username, password_hash=str(hash), email=email)
+
+    try:
+        db.session.add(new_user)
+        db.session.commit()
+        return jsonify({"message": "User registered successfully"}), 201
+    except Exception as e:
+        print(e)
+        db.session.rollback()
+        return jsonify({"error": str(e)}), 500
+
+    
+
+    
+# Handles logins
 
 # Run App
 if __name__ == '__main__':
     with app.app_context():
         db.create_all()  # Ensure tables exist
     app.run(host='0.0.0.0', port=5000, debug=True)
+    
+
+
