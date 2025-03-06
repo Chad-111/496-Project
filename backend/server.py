@@ -5,6 +5,7 @@ import bcrypt
 import requests
 import os
 import random
+from sqlalchemy import PrimaryKeyConstraint, Column
 
 
 import subprocess
@@ -102,17 +103,175 @@ db = SQLAlchemy(app)
 # Define Models
 class User(db.Model):
     __tablename__ = 'users'
-    id = db.Column(db.Integer, primary_key=True)
-    username = db.Column(db.String(50), unique=True, nullable=False)
-    email = db.Column(db.String(100), unique=True, nullable=False)
-    password_hash = db.Column(db.String(63), nullable=False)
+    id = Column(db.Integer, primary_key=True)
+    username = Column(db.String(50), unique=True, nullable=False)
+    email = Column(db.String(100), unique=True, nullable=False)
+    password_hash = Column(db.String(63), nullable=False)
+
 
 class League(db.Model):
     __tablename__ = 'leagues'
-    id = db.Column(db.Integer, primary_key=True)
-    league_name = db.Column(db.String(100), nullable=False)
-    manager_id = db.Column(db.Integer, db.ForeignKey('users.id'))
+    id = Column(db.Integer, primary_key=True)
+    league_name = Column(db.String(100), nullable=False)
+    manager_id = Column(db.Integer, db.ForeignKey('users.id'))
 
+
+class Team(db.Model):
+    __tablename__ = "teams"
+    team_id = Column(db.Integer, primary_key=True)
+    user_id = Column(db.Integer, db.ForeignKey("users.id"))
+    league_id = Column(db.Integer, db.ForeignKey("leagues.id"))
+    wins = Column(db.Integer, default=0)
+    losses = Column(db.Integer, default=0)
+
+
+class TeamPlayer(db.Model):
+    __tablename__ = "teamplayers"
+    player_id = Column(db.Integer, db.ForeignKey("players.id"))
+    league_id = Column(db.Integer, db.ForeignKey("leagues.id"))
+    team_id = Column(db.Integer, db.ForeignKey("teams.team_id"))
+    starting_position = Column(db.String(3), default="BEN") # bench default
+    __table_args__ = (
+        PrimaryKeyConstraint(player_id, league_id),
+    )
+
+
+class Matchup(db.Model):
+    __tablename__ = "matchups"
+    id = Column(db.Integer, primary_key=True)
+    league_id = Column(db.Integer, db.ForeignKey("leagues.id"))
+    week_num = Column(db.Integer, default=1)
+    away_team_id = Column(db.Integer, db.ForeignKey("teams.team_id"))
+    away_team_score = Column(db.Float(5), default=0)
+    home_team_id = Column(db.Integer, db.ForeignKey("teams.team_id"))
+    home_team_score = Column(db.Float(5), default=0)
+
+
+class Ruleset(db.Model):
+    __tablename__ = "rulesets"
+    
+    league_id = Column(db.Integer, db.ForeignKey("leagues.id"), primary_key=True)
+    
+    # Passing stats
+    points_passtd = Column(db.Float, default=4.0)  # Passing TD
+    points_passyd = Column(db.Float, default=0.04)  # Passing yard
+    points_int = Column(db.Float, default=-2.0)  # Interception
+    
+    # Rushing stats
+    points_rushtd = Column(db.Float, default=6.0)  # Rushing TD
+    points_rushyd = Column(db.Float, default=0.1)  # Rushing yard
+    
+    # Receiving stats
+    points_rectd = Column(db.Float, default=6.0)  # Receiving TD
+    points_recyd = Column(db.Float, default=0.1)  # Receiving yard
+    points_reception = Column(db.Float, default=1.0)  # PPR (Points Per Reception)
+    
+    # Fumbles
+    points_fumble = Column(db.Float, default=-2.0)  # Fumble lost
+    
+    # Defensive scoring
+    points_sack = Column(db.Float, default=1.0)  # Sack
+    points_int_def = Column(db.Float, default=2.0)  # Defensive interception
+    points_fumble_def = Column(db.Float, default=2.0)  # Defensive fumble recovery
+    points_safety = Column(db.Float, default=2.0)  # Safety
+    points_def_td = Column(db.Float, default=6.0)  # Defensive TD
+    points_block_kick = Column(db.Float, default=2.0)  # Blocked kick
+    
+    # Defense points allowed
+    points_shutout = Column(db.Float, default=10.0)  # 0 points allowed
+    points_1_6_pa = Column(db.Float, default=7.0)  # 1-6 points allowed
+    points_7_13_pa = Column(db.Float, default=4.0)  # 7-13 points allowed
+    points_14_20_pa = Column(db.Float, default=1.0)  # 14-20 points allowed
+    points_21_27_pa = Column(db.Float, default=0.0)  # 21-27 points allowed
+    points_28_34_pa = Column(db.Float, default=-1.0)  # 28-34 points allowed
+    points_35plus_pa = Column(db.Float, default=-4.0)  # 35+ points allowed
+    
+    # Special teams scoring
+    points_kick_return_td = Column(db.Float, default=6.0)  # Kick return TD
+    points_punt_return_td = Column(db.Float, default=6.0)  # Punt return TD
+    
+    # Kicking stats
+    points_fg_0_39 = Column(db.Float, default=3.0)  # Field goal 0-39 yards
+    points_fg_40_49 = Column(db.Float, default=4.0)  # Field goal 40-49 yards
+    points_fg_50plus = Column(db.Float, default=5.0)  # Field goal 50+ yards
+    points_fg_miss = Column(db.Float, default=-1.0)  # Missed FG
+    points_xp = Column(db.Float, default=1.0)  # Extra point made
+    points_xp_miss = Column(db.Float, default=-1.0)  # Missed extra point
+
+
+class Player(db.Model):
+    __tablename__ = "players"
+    id = Column(db.Integer, primary_key=True)
+
+    position = Column(db.String(3), nullable=False)
+    team_name = Column(db.String, default="FA")
+    last_name = Column(db.String, nullable=False)
+    first_name = Column(db.String, nullable=False)
+
+
+class WeeklyStats(db.Model):
+    __tablename__ = "weeklystats"
+    
+    week_num = Column(db.Integer, nullable=False)
+    player_id = Column(db.Integer, db.ForeignKey("players.id"), nullable=False)
+
+    __table_args__ = (
+        PrimaryKeyConstraint(week_num, player_id),
+    )
+
+    # Passing stats
+    passing_tds = Column(db.Integer, default=0)
+    passing_yds = Column(db.Integer, default=0)
+    interceptions = Column(db.Integer, default=0)
+
+    # Rushing stats
+    rushing_tds = Column(db.Integer, default=0)
+    rushing_yds = Column(db.Integer, default=0)
+
+    # Receiving stats
+    receiving_tds = Column(db.Integer, default=0)
+    receiving_yds = Column(db.Integer, default=0)
+    receptions = Column(db.Integer, default=0)
+
+    # Fumbles
+    fumbles_lost = Column(db.Integer, default=0)
+
+    # Defensive stats
+    sacks = Column(db.Integer, default=0)
+    interceptions_def = Column(db.Integer, default=0)
+    fumbles_recovered = Column(db.Integer, default=0)
+    safeties = Column(db.Integer, default=0)
+    defensive_tds = Column(db.Integer, default=0)
+    blocked_kicks = Column(db.Integer, default=0)
+
+    # Defense points allowed
+    points_allowed = Column(db.Integer, default=0)
+
+    # Special teams stats
+    kick_return_tds = Column(db.Integer, default=0)
+    punt_return_tds = Column(db.Integer, default=0)
+
+    # Kicking stats
+    fg_made_0_39 = Column(db.Integer, default=0)
+    fg_made_40_49 = Column(db.Integer, default=0)
+    fg_made_50plus = Column(db.Integer, default=0)
+    fg_missed = Column(db.Integer, default=0)
+    xp_made = Column(db.Integer, default=0)
+    xp_missed = Column(db.Integer, default=0)
+
+
+class TeamPlayerPerformance(db.Model):
+    __tablename__ = "teamplayerperformance"
+    week_num = Column(db.Integer, nullable=False)
+    player_id = Column(db.Integer, db.ForeignKey("players.id"))
+    league_id = Column(db.Integer, db.ForeignKey("leagues.id"))
+    starting_position = Column(db.String(3), default="BEN")
+    fantasy_points = Column(db.Float(5), default=0)
+
+    __table_args__ = (
+        PrimaryKeyConstraint(week_num, player_id, league_id),
+    )
+    
 
 
 # API Routes
