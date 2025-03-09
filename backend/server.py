@@ -280,6 +280,10 @@ class TeamPlayerPerformance(db.Model):
 
 
 # API Routes
+@app.route('/api/')
+def api_root():
+    return "API is working!"
+
 @app.route('/api/users', methods=['GET'])
 def get_users():
     users = User.query.all()
