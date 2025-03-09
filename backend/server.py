@@ -14,6 +14,7 @@ import subprocess
 # Initialize Flask app
 app = Flask(__name__)
 CORS(app)  # Allow cross-origin requests from frontend
+app.config['CORS_HEADERS'] = 'Content-Type' # maybe needed for CORS? try this out
 app.secret_key = "/,&R~Qh}<pl#kI@H#D&b&i>69Fhc?|"  # Change this to a secure key
 
 # Dummy user credentials (can be stored in a database later)
