@@ -3,7 +3,7 @@ import './App.css'
 import { useEffect } from 'react';
 
 function Login() {
-    const API_BASE_URL = import.meta.env.VITE_API_BASE_URL;
+    const API_BASE_URL = "https://draftempire.win/api";
     const handleSubmit = async (event) => {
         event.preventDefault();
         const formData = new FormData(event.target);
