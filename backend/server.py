@@ -3,7 +3,7 @@ from flask_sqlalchemy import SQLAlchemy
 from flask_cors import CORS
 import bcrypt
 import requests
-from sqlalchemy.sql import PrimaryKeyConstraint, Column, ForeignKey, create_engine, Integer, String, Float, text
+from sqlalchemy import PrimaryKeyConstraint, Column, ForeignKey, create_engine, Integer, String, Float, text
 from sqlalchemy.orm import scoped_session, sessionmaker, declarative_base
 
 
