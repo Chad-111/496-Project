@@ -3,6 +3,7 @@ import './App.css'
 import { useEffect } from 'react';
 
 function Signup() {
+    const API_BASE_URL = import.meta.env.VITE_API_BASE_URL;
     const [data, setData] = useState({
         username: "",
         password: "",
@@ -15,7 +16,7 @@ function Signup() {
         const formValues = Object.fromEntries(formData.entries());
         console.log(formValues)
         try {
-            const response = await fetch("http://127.0.0.1:5000/api/signup", {
+            const response = await fetch('${API_BASE_URL}/signup', {
                 method: "POST",
                 headers: {
                     'Accept': 'application/json',
