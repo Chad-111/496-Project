@@ -21,7 +21,10 @@ app.secret_key = "/,&R~Qh}<pl#kI@H#D&b&i>69Fhc?|"  # Change this to a secure key
 USERS = {"admin": "password123"}
 
 # PostgreSQL Database Configuration
-SQLALCHEMY_URI = 'postgresql://admin:admin@localhost/draftempire'
+app.config['SQLALCHEMY_DATABASE_URI'] = 'postgresql://admin:password123@localhost/draftempire'
+app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
+db = SQLAlchemy(app)
+
 
 # Log file paths
 APACHE_ACCESS_LOG = "/var/log/apache2/draftempire_access.log"  # Update for your Apache logs
@@ -99,7 +102,7 @@ def get_apache_error_logs():
         return jsonify({"error": str(e)})
 
 # Initialize Database
-engine = create_engine(SQLALCHEMY_URI)
+engine = create_engine(app.config['SQLALCHEMY_DATABASE_URI'])
 db_session = scoped_session(sessionmaker(autocommit=False,
                                          autoflush=False,
                                          bind=engine))
@@ -356,7 +359,7 @@ def login():
 # Run App
 if __name__ == '__main__':
     with app.app_context():
-        init_db()  # Ensure tables exist
+        db.create_all()
     app.run(host='0.0.0.0', port=5000, debug=True)
     
 
