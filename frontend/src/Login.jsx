@@ -3,14 +3,14 @@ import './App.css'
 import { useEffect } from 'react';
 
 function Login() {
-    const API_BASE_URL = "https://draftempire.win/api";
+    const API_BASE_URL = "http://127.0.0.1:5000/api"; // change for prod
     const handleSubmit = async (event) => {
         event.preventDefault();
         const formData = new FormData(event.target);
         const formValues = Object.fromEntries(formData.entries());
         console.log(formValues)
         try {
-            const response = await fetch('${API_BASE_URL}/login', {
+            const response = await fetch(`${API_BASE_URL}/login`, {
                 method: "POST",
                 headers: {
                     'Accept': 'application/json',

@@ -18,12 +18,11 @@ app.config['CORS_HEADERS'] = 'Content-Type' # maybe needed for CORS? try this ou
 app.secret_key = "/,&R~Qh}<pl#kI@H#D&b&i>69Fhc?|"  # Change this to a secure key
 
 # Dummy user credentials (can be stored in a database later)
-USERS = {"admin": "password123"}
+USERS = {"admin": "admin"}
 
 # PostgreSQL Database Configuration
-app.config['SQLALCHEMY_DATABASE_URI'] = 'postgresql://admin:password123@localhost/draftempire'
+app.config['SQLALCHEMY_DATABASE_URI'] = 'postgresql://admin:admin@localhost/draftempire'
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
-db = SQLAlchemy(app)
 
 
 # Log file paths
@@ -350,26 +349,16 @@ def login():
 
     # Check if user exists
     user = User.query.filter_by(email=email).first()
-    if not user or not bcrypt.checkpw(password.encode("utf-8"), user.password_hash.encode("utf-8")):
+    if not user or not bcrypt.checkpw(bytes(password, encoding="utf-8"), bytes(user.password_hash[2:-1], encoding="utf-8")):
         return jsonify({"error": "Invalid email or password"}), 401
-
-    session["user_id"] = user.id
+    session["user-id"] = user.id
     return jsonify({"message": "Login successful", "username": user.username}), 200
 
-
-# Test Database Connection
-@app.route('/test_db')
-def test_db():
-    try:
-        db.session.execute(text("SELECT 1"))
-        return "Database connection successful!"
-    except Exception as e:
-        return f"Database connection failed: {e}"
 
 # Run App
 if __name__ == '__main__':
     with app.app_context():
-        db.create_all()
+        init_db()
     app.run(host='0.0.0.0', port=5000, debug=True)
     
 

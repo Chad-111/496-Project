@@ -11,8 +11,8 @@ createRoot(document.getElementById('root')).render(
   </StrictMode>,
 )
 */
-/*DO NOT RUN THIS ON EXPOSED SERVER
-this contains raw SQL input, need to implement protections.*/
+
+// this contains raw SQL input, need to implement protections.
 createRoot(document.getElementById('root')).render(
   <StrictMode>
     <Login />
