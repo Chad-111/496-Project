@@ -3,7 +3,9 @@ from flask_sqlalchemy import SQLAlchemy
 from flask_cors import CORS
 import bcrypt
 import requests
-from sqlalchemy import PrimaryKeyConstraint, Column, ForeignKey, create_engine, Integer, String, Float, text
+import os
+import random
+from sqlalchemy import PrimaryKeyConstraint, Column, ForeignKey, create_engine, Integer, String, Float
 from sqlalchemy.orm import scoped_session, sessionmaker, declarative_base
 
 
@@ -111,167 +113,172 @@ def init_db():
     Base.metadata.create_all(bind=engine)
 
 # Define Models
-class User(db.Model):
+class User(Base):
     __tablename__ = 'users'
-    id = db.Column(db.Integer, primary_key=True)
-    username = db.Column(db.String(50), unique=True, nullable=False)
-    email = db.Column(db.String(100), unique=True, nullable=False)
-    password_hash = db.Column(db.String(255), nullable=False)  # Increased length to 255 for safety
+    id = Column(Integer, primary_key=True)
+    username = Column(String(50), unique=True, nullable=False)
+    email = Column(String(100), unique=True, nullable=False)
+    password_hash = Column(String(63), nullable=False)
 
 
-class League(db.Model):
+class League(Base):
     __tablename__ = 'leagues'
-    id = db.Column(db.Integer, primary_key=True)
-    league_name = db.Column(db.String(100), nullable=False)
-    manager_id = db.Column(db.Integer, db.ForeignKey('users.id'))
+    id = Column(Integer, primary_key=True)
+    league_name = Column(String(100), nullable=False)
+    manager_id = Column(Integer, ForeignKey('users.id'))
 
 
-class Team(db.Model):
+class Team(Base):
     __tablename__ = "teams"
-    id = db.Column(db.Integer, primary_key=True)  # Changed team_id to id
-    user_id = db.Column(db.Integer, db.ForeignKey("users.id"))
-    league_id = db.Column(db.Integer, db.ForeignKey("leagues.id"))
-    wins = db.Column(db.Integer, default=0)
-    losses = db.Column(db.Integer, default=0)
+    team_id = Column(Integer, primary_key=True)
+    user_id = Column(Integer, ForeignKey("users.id"))
+    league_id = Column(Integer, ForeignKey("leagues.id"))
+    wins = Column(Integer, default=0)
+    losses = Column(Integer, default=0)
 
 
-class TeamPlayer(db.Model):
+class TeamPlayer(Base):
     __tablename__ = "teamplayers"
-    player_id = db.Column(db.Integer, db.ForeignKey("players.id"))
-    league_id = db.Column(db.Integer, db.ForeignKey("leagues.id"))
-    team_id = db.Column(db.Integer, db.ForeignKey("teams.id"))  # Fixed reference to id
-    starting_position = db.Column(db.String(3), default="BEN")
+    player_id = Column(Integer, ForeignKey("players.id"))
+    league_id = Column(Integer, ForeignKey("leagues.id"))
+    team_id = Column(Integer, ForeignKey("teams.team_id"))
+    starting_position = Column(String(3), default="BEN") # bench default
     __table_args__ = (
-        db.PrimaryKeyConstraint(player_id, league_id),
+        PrimaryKeyConstraint(player_id, league_id),
     )
 
 
-# Matchup Model
-class Matchup(db.Model):
+class Matchup(Base):
     __tablename__ = "matchups"
-    id = db.Column(db.Integer, primary_key=True)
-    league_id = db.Column(db.Integer, db.ForeignKey("leagues.id"))
-    week_num = db.Column(db.Integer, default=1)
-    away_team_id = db.Column(db.Integer, db.ForeignKey("teams.id"))
-    away_team_score = db.Column(db.Float, default=0)
-    home_team_id = db.Column(db.Integer, db.ForeignKey("teams.id"))
-    home_team_score = db.Column(db.Float, default=0)
+    id = Column(Integer, primary_key=True)
+    league_id = Column(Integer, ForeignKey("leagues.id"))
+    week_num = Column(Integer, default=1)
+    away_team_id = Column(Integer, ForeignKey("teams.team_id"))
+    away_team_score = Column(Float(5), default=0)
+    home_team_id = Column(Integer, ForeignKey("teams.team_id"))
+    home_team_score = Column(Float(5), default=0)
 
-class Ruleset(db.Model):
+
+class Ruleset(Base):
     __tablename__ = "rulesets"
     
-    league_id = db.Column(db.Integer, db.ForeignKey("leagues.id"), primary_key=True)
-
+    league_id = Column(Integer, ForeignKey("leagues.id"), primary_key=True)
+    
     # Passing stats
-    points_passtd = db.Column(db.Float, default=4.0)  # Passing TD
-    points_passyd = db.Column(db.Float, default=0.04)  # Passing yard
-    points_int = db.Column(db.Float, default=-2.0)  # Interception
-
+    points_passtd = Column(Float, default=4.0)  # Passing TD
+    points_passyd = Column(Float, default=0.04)  # Passing yard
+    points_int = Column(Float, default=-2.0)  # Interception
+    
     # Rushing stats
-    points_rushtd = db.Column(db.Float, default=6.0)  # Rushing TD
-    points_rushyd = db.Column(db.Float, default=0.1)  # Rushing yard
-
+    points_rushtd = Column(Float, default=6.0)  # Rushing TD
+    points_rushyd = Column(Float, default=0.1)  # Rushing yard
+    
     # Receiving stats
-    points_rectd = db.Column(db.Float, default=6.0)  # Receiving TD
-    points_recyd = db.Column(db.Float, default=0.1)  # Receiving yard
-    points_reception = db.Column(db.Float, default=1.0)  # PPR (Points Per Reception)
-
+    points_rectd = Column(Float, default=6.0)  # Receiving TD
+    points_recyd = Column(Float, default=0.1)  # Receiving yard
+    points_reception = Column(Float, default=1.0)  # PPR (Points Per Reception)
+    
     # Fumbles
-    points_fumble = db.Column(db.Float, default=-2.0)  # Fumble lost
-
+    points_fumble = Column(Float, default=-2.0)  # Fumble lost
+    
     # Defensive scoring
-    points_sack = db.Column(db.Float, default=1.0)  # Sack
-    points_int_def = db.Column(db.Float, default=2.0)  # Defensive interception
-    points_fumble_def = db.Column(db.Float, default=2.0)  # Defensive fumble recovery
-    points_safety = db.Column(db.Float, default=2.0)  # Safety
-    points_def_td = db.Column(db.Float, default=6.0)  # Defensive TD
-    points_block_kick = db.Column(db.Float, default=2.0)  # Blocked kick
-
+    points_sack = Column(Float, default=1.0)  # Sack
+    points_int_def = Column(Float, default=2.0)  # Defensive interception
+    points_fumble_def = Column(Float, default=2.0)  # Defensive fumble recovery
+    points_safety = Column(Float, default=2.0)  # Safety
+    points_def_td = Column(Float, default=6.0)  # Defensive TD
+    points_block_kick = Column(Float, default=2.0)  # Blocked kick
+    
     # Defense points allowed
-    points_shutout = db.Column(db.Float, default=10.0)  # 0 points allowed
-    points_1_6_pa = db.Column(db.Float, default=7.0)  # 1-6 points allowed
-    points_7_13_pa = db.Column(db.Float, default=4.0)  # 7-13 points allowed
-    points_14_20_pa = db.Column(db.Float, default=1.0)  # 14-20 points allowed
-    points_21_27_pa = db.Column(db.Float, default=0.0)  # 21-27 points allowed
-    points_28_34_pa = db.Column(db.Float, default=-1.0)  # 28-34 points allowed
-    points_35plus_pa = db.Column(db.Float, default=-4.0)  # 35+ points allowed
-
+    points_shutout = Column(Float, default=10.0)  # 0 points allowed
+    points_1_6_pa = Column(Float, default=7.0)  # 1-6 points allowed
+    points_7_13_pa = Column(Float, default=4.0)  # 7-13 points allowed
+    points_14_20_pa = Column(Float, default=1.0)  # 14-20 points allowed
+    points_21_27_pa = Column(Float, default=0.0)  # 21-27 points allowed
+    points_28_34_pa = Column(Float, default=-1.0)  # 28-34 points allowed
+    points_35plus_pa = Column(Float, default=-4.0)  # 35+ points allowed
+    
     # Special teams scoring
-    points_kick_return_td = db.Column(db.Float, default=6.0)  # Kick return TD
-    points_punt_return_td = db.Column(db.Float, default=6.0)  # Punt return TD
-
+    points_kick_return_td = Column(Float, default=6.0)  # Kick return TD
+    points_punt_return_td = Column(Float, default=6.0)  # Punt return TD
+    
     # Kicking stats
-    points_fg_0_39 = db.Column(db.Float, default=3.0)  # Field goal 0-39 yards
-    points_fg_40_49 = db.Column(db.Float, default=4.0)  # Field goal 40-49 yards
-    points_fg_50plus = db.Column(db.Float, default=5.0)  # Field goal 50+ yards
-    points_fg_miss = db.Column(db.Float, default=-1.0)  # Missed FG
-    points_xp = db.Column(db.Float, default=1.0)  # Extra point made
-    points_xp_miss = db.Column(db.Float, default=-1.0)  # Missed extra point
+    points_fg_0_39 = Column(Float, default=3.0)  # Field goal 0-39 yards
+    points_fg_40_49 = Column(Float, default=4.0)  # Field goal 40-49 yards
+    points_fg_50plus = Column(Float, default=5.0)  # Field goal 50+ yards
+    points_fg_miss = Column(Float, default=-1.0)  # Missed FG
+    points_xp = Column(Float, default=1.0)  # Extra point made
+    points_xp_miss = Column(Float, default=-1.0)  # Missed extra point
 
-# Player Model
-class Player(db.Model):
+
+class Player(Base):
     __tablename__ = "players"
-    id = db.Column(db.Integer, primary_key=True)
-    position = db.Column(db.String(3), nullable=False)
-    team_name = db.Column(db.String, default="FA")
-    last_name = db.Column(db.String, nullable=False)
-    first_name = db.Column(db.String, nullable=False)
+    id = Column(Integer, primary_key=True)
+
+    position = Column(String(3), nullable=False)
+    team_name = Column(String, default="FA")
+    last_name = Column(String, nullable=False)
+    first_name = Column(String, nullable=False)
 
 
-# WeeklyStats Model
-class WeeklyStats(db.Model):
+class WeeklyStats(Base):
     __tablename__ = "weeklystats"
-    week_num = db.Column(db.Integer, nullable=False, primary_key=True)
-    player_id = db.Column(db.Integer, db.ForeignKey("players.id"), nullable=False, primary_key=True)
+    
+    week_num = Column(Integer, nullable=False)
+    player_id = Column(Integer, ForeignKey("players.id"), nullable=False)
+
+    __table_args__ = (
+        PrimaryKeyConstraint(week_num, player_id),
+    )
 
     # Passing stats
-    passing_tds = db.Column(db.Integer, default=0)
-    passing_yds = db.Column(db.Integer, default=0)
-    interceptions = db.Column(db.Integer, default=0)
+    passing_tds = Column(Integer, default=0)
+    passing_yds = Column(Integer, default=0)
+    interceptions = Column(Integer, default=0)
 
     # Rushing stats
-    rushing_tds = db.Column(db.Integer, default=0)
-    rushing_yds = db.Column(db.Integer, default=0)
+    rushing_tds = Column(Integer, default=0)
+    rushing_yds = Column(Integer, default=0)
 
     # Receiving stats
-    receiving_tds = db.Column(db.Integer, default=0)
-    receiving_yds = db.Column(db.Integer, default=0)
-    receptions = db.Column(db.Integer, default=0)
+    receiving_tds = Column(Integer, default=0)
+    receiving_yds = Column(Integer, default=0)
+    receptions = Column(Integer, default=0)
 
     # Fumbles
-    fumbles_lost = db.Column(db.Integer, default=0)
+    fumbles_lost = Column(Integer, default=0)
 
     # Defensive stats
-    sacks = db.Column(db.Integer, default=0)
-    interceptions_def = db.Column(db.Integer, default=0)
-    fumbles_recovered = db.Column(db.Integer, default=0)
-    safeties = db.Column(db.Integer, default=0)
-    defensive_tds = db.Column(db.Integer, default=0)
-    blocked_kicks = db.Column(db.Integer, default=0)
+    sacks = Column(Integer, default=0)
+    interceptions_def = Column(Integer, default=0)
+    fumbles_recovered = Column(Integer, default=0)
+    safeties = Column(Integer, default=0)
+    defensive_tds = Column(Integer, default=0)
+    blocked_kicks = Column(Integer, default=0)
 
     # Defense points allowed
-    points_allowed = db.Column(db.Integer, default=0)
+    points_allowed = Column(Integer, default=0)
 
     # Special teams stats
-    kick_return_tds = db.Column(db.Integer, default=0)
-    punt_return_tds = db.Column(db.Integer, default=0)
+    kick_return_tds = Column(Integer, default=0)
+    punt_return_tds = Column(Integer, default=0)
 
     # Kicking stats
-    fg_made_0_39 = db.Column(db.Integer, default=0)
-    fg_made_40_49 = db.Column(db.Integer, default=0)
-    fg_made_50plus = db.Column(db.Integer, default=0)
-    fg_missed = db.Column(db.Integer, default=0)
-    xp_made = db.Column(db.Integer, default=0)
-    xp_missed = db.Column(db.Integer, default=0)
+    fg_made_0_39 = Column(Integer, default=0)
+    fg_made_40_49 = Column(Integer, default=0)
+    fg_made_50plus = Column(Integer, default=0)
+    fg_missed = Column(Integer, default=0)
+    xp_made = Column(Integer, default=0)
+    xp_missed = Column(Integer, default=0)
 
-# TeamPlayerPerformance Model
-class TeamPlayerPerformance(db.Model):
+
+class TeamPlayerPerformance(Base):
     __tablename__ = "teamplayerperformance"
-    week_num = db.Column(db.Integer, nullable=False, primary_key=True)
-    player_id = db.Column(db.Integer, db.ForeignKey("players.id"), primary_key=True)
-    league_id = db.Column(db.Integer, db.ForeignKey("leagues.id"), primary_key=True)
-    starting_position = db.Column(db.String(3), default="BEN")
-    fantasy_points = db.Column(db.Float, default=0)
+    week_num = Column(Integer, nullable=False)
+    player_id = Column(Integer, ForeignKey("players.id"))
+    league_id = Column(Integer, ForeignKey("leagues.id"))
+    starting_position = Column(String(3), default="BEN")
+    fantasy_points = Column(Float(5), default=0)
 
     __table_args__ = (
         PrimaryKeyConstraint(week_num, player_id, league_id),
@@ -295,39 +302,43 @@ def get_leagues():
     return jsonify([{ 'id': l.id, 'league_name': l.league_name, 'manager_id': l.manager_id } for l in leagues])
 
 
-# User Signup
 @app.route('/api/signup', methods=["POST"])
 def signup():
     data = request.get_json()
     email = data.get("email")
     password = data.get("password")
     username = data.get("username")
+    bytes = password.encode("utf-8")
+    salt = bcrypt.gensalt()
+    hash = bcrypt.hashpw(bytes, salt)
 
     if not email or not password or not username:
         return jsonify({"error": "Missing required fields"}), 400
+    
 
     # Check if user already exists
     existing_user = User.query.filter((User.email == email) | (User.username == username)).first()
     if existing_user:
         return jsonify({"error": "User already exists"}), 400
 
-    # Hash password
-    hashed_password = bcrypt.hashpw(password.encode("utf-8"), bcrypt.gensalt()).decode("utf-8")
+    
+    
+    new_user = User(username=username, password_hash=str(hash), email=email)
 
-    # Create user
-    new_user = User(username=username, password_hash=hashed_password, email=email)
     try:
-        db.session.add(new_user)
-        db.session.commit()
+        db_session.add(new_user)
+        db_session.commit()
         return jsonify({"message": "User registered successfully"}), 201
     except Exception as e:
-        db.session.rollback()
+        print(e)
+        db_session.rollback()
         return jsonify({"error": str(e)}), 500
 
     
 
     
-# User Login
+# Handles logins
+# Probably needs to be edited using sessions and whatnot
 @app.route('/api/login', methods=["POST"])
 def login():
     data = request.get_json()
