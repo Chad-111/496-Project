@@ -1,4 +1,4 @@
-from flask import Flask, jsonify, send_from_directory
+from flask import Flask, jsonify, send_from_directory, Response
 from flask_cors import CORS
 import os
 
@@ -7,7 +7,9 @@ CORS(app)  # Enable CORS for all routes
 
 @app.route('/api/message')
 def get_message():
-    return jsonify({"message": "Hello from Flask!"})
+    response = jsonify({"message": "Hello from Flask!"})
+    response.headers["Content-Type"] = "application/json"
+    return response
 
 # Serve React Frontend
 @app.route("/", defaults={"path": ""})
