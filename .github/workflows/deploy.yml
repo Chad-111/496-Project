@@ -29,12 +29,6 @@ jobs:
             cd ../frontend
             npm install
             npm run build
-            
-            # Fix Vite permissions
-            chmod +x node_modules/.bin/vite
-
-            # Run Vite build
-            npx vite build
 
             # Deploy frontend
             sudo cp -r dist/* /var/www/html/
