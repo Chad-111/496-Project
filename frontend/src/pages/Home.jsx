@@ -4,7 +4,8 @@ export default function Home() {
   const [message, setMessage] = useState("");
 
   useEffect(() => {
-    fetch("http://127.0.0.1:5000/api/message")  // Fetch from Flask API
+    // WAS "fetch("http://localhost:5000/api/message")" <- this was for localhost/testing
+    fetch("https://draftempire.win/api/message")  // Fetch from Flask API
       .then((response) => response.json())
       .then((data) => setMessage(data.message))
       .catch((error) => console.error("Error fetching message:", error));
