@@ -33,5 +33,6 @@ jobs:
             # Deploy frontend
             sudo cp -r dist/* /var/www/html/
 
-            # Restart Apache
+            # Restart Flask and Apache
+            sudo systemctl restart flaskapp
             sudo systemctl restart apache2
