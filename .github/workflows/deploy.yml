@@ -17,7 +17,7 @@ jobs:
           username: ${{ secrets.SERVER_USER }}
           key: ${{ secrets.SSH_PRIVATE_KEY }}
           script: |
-            cd ~/DraftEmpire/
+            cd ~/DraftEmpire/496-Project
             git pull origin main
 
             # Backend setup
@@ -33,5 +33,5 @@ jobs:
             # Deploy frontend
             sudo cp -r dist/* /var/www/html/
 
-            # Restart Apache to apply changes
+            # Restart Apache
             sudo systemctl restart apache2
