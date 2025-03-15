@@ -5,11 +5,12 @@ export default function Home() {
 
   useEffect(() => {
     // fetch(localhost:5000/api/message)  // Works under Flask dev server
-  fetch("/api/message")  // Now works under Apache reverse proxy
-    .then((response) => response.json())
-    .then((data) => setMessage(data.message))
-    .catch((error) => console.error("Error fetching message:", error));
-}, []);
+    fetch("https://draftempire.win/api/message")
+      .then((response) => response.json())
+      .then((data) => setMessage(data.message))
+      .catch((error) => console.error("Error fetching message:", error));
+  }, []);
+
 
 
   return (
