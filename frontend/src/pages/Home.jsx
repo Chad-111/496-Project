@@ -4,12 +4,13 @@ export default function Home() {
   const [message, setMessage] = useState("");
 
   useEffect(() => {
-    // WAS "fetch("http://localhost:5000/api/message")" <- this was for localhost/testing
-    fetch("https://draftempire.win/api/message")  // Fetch from Flask API
-      .then((response) => response.json())
-      .then((data) => setMessage(data.message))
-      .catch((error) => console.error("Error fetching message:", error));
-  }, []);
+    // fetch(localhost:5000/api/message)  // Works under Flask dev server
+  fetch("/api/message")  // Now works under Apache reverse proxy
+    .then((response) => response.json())
+    .then((data) => setMessage(data.message))
+    .catch((error) => console.error("Error fetching message:", error));
+}, []);
+
 
   return (
     <div style={{ textAlign: "center", padding: "20px" }}>
