@@ -1,41 +1,30 @@
-// This is the template file from Vite. We can change this at will.
-import { useState } from 'react'
-import './App.css'
-import { useEffect } from 'react';
+import { BrowserRouter as Router, Routes, Route, Link } from "react-router-dom";
+import Home from "./pages/Home";
+import About from "./pages/About";
+import Contact from "./pages/Contact";
 
 function App() {
-  const [data, setdata] = useState({
-    name: ""
-  });
-  const [count, setCount] = useState(0);
-
-
-  useEffect(() => {
-    // Using fetch to fetch the api from 
-    // flask server it will be redirected to proxy
-    fetch("/api").then((res) => console.log(res));
-    fetch("/api").then((res) =>
-        res.json().then((data) => {
-            // Setting a data from api
-            setdata({
-                name: data.Name
-            });
-        })
-    );
-  }, []);
-
   return (
-    <>
-      <p></p>
-      <h1>Hello World. This is Draft Empire!</h1>
-      <div className="card">
-        <button onClick={() => setCount((count) => count + 1)}>
-          count is {count}
-        </button>
+    <Router>
+      <div>
+        {/* Navigation */}
+        <nav>
+          <ul>
+            <li><Link to="/">Home</Link></li>
+            <li><Link to="/about">About</Link></li>
+            <li><Link to="/contact">Contact</Link></li>
+          </ul>
+        </nav>
+
+        {/* Page-Specific Content */}
+        <Routes>
+          <Route path="/" element={<Home />} />
+          <Route path="/about" element={<About />} />
+          <Route path="/contact" element={<Contact />} />
+        </Routes>
       </div>
-      <p>{data.name}</p>
-    </>
-  )
+    </Router>
+  );
 }
 
-export default App
+export default App;
