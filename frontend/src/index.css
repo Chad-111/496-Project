@@ -28,8 +28,7 @@ nav ul li {
 nav ul li a {
   color: white;
   text-decoration: none;
-  font-variant: all-small-caps;
-  font-size: 1.7vmax;
+  font-size: larger;
 }
 
 a {
@@ -42,7 +41,7 @@ a:hover {
 }
 
 body {
-  margin: 0px auto
+  margin: 0px auto;
 }
 
 h1 {

@@ -4,17 +4,17 @@ export default function Home() {
   const [message, setMessage] = useState("");
 
   useEffect(() => {
-    // fetch(localhost:5000/api/message)  // Works under Flask dev server
-    fetch("/api/message")
-      .then((response) => response.json())
-      .then((data) => setMessage(data.message))
-      .catch((error) => console.error("Error fetching message:", error));
+    const apiUrl = window.location.origin + "/api/";
+
+    fetch(apiUrl)
+      .then(response => response.json())
+      .then(data => setMessage(data.message))
+      .catch(error => console.error("Error fetching:", error));
   }, []);
-
-
 
   return (
     <div style={{ textAlign: "center", padding: "20px" }}>
+      <h1>React Frontend</h1>  
       <h1>🏚️ Welcome to Draft Empire!</h1>      
       <h3>Follow our progress by clicking the button below!</h3>
 

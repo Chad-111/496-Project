@@ -1,9 +1,9 @@
-name: Deploy to Server
+name: Auto Deploy
 
 on:
   push:
     branches:
-      - main  # Change this if your branch name is different
+      - main
 
 jobs:
   deploy:
@@ -11,28 +11,10 @@ jobs:
 
     steps:
       - name: SSH into Server and Deploy
-        uses: appleboy/ssh-action@v0.1.7
+        uses: appleboy/ssh-action@v0.1.10
         with:
           host: ${{ secrets.SERVER_IP }}
           username: ${{ secrets.SERVER_USER }}
           key: ${{ secrets.SSH_PRIVATE_KEY }}
           script: |
-            cd ~/DraftEmpire/496-Project
-            git pull origin main
-
-            # Backend setup
-            cd backend
-            source venv/bin/activate
-            pip install -r requirements.txt
-
-            # Frontend setup
-            cd ../frontend
-            npm install
-            npm run build
-
-            # Deploy frontend
-            sudo cp -r dist/* /var/www/html/
-
-            # Restart Flask and Apache
-            sudo systemctl restart flaskapp
-            sudo systemctl restart apache2
+            ~/deploy.sh
