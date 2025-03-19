@@ -40,3 +40,68 @@
 .read-the-docs {
   color: #888;
 }
+
+/* General Navbar Styling ------------------------------------------------------------------------------------------------------------*/
+nav {
+  background: #333;
+  padding: 5px;
+}
+
+nav ul {
+  list-style: none;
+  display: flex;
+  gap: 5%;
+}
+
+nav ul li {
+  position: relative;
+}
+
+nav ul li a {
+  color: white;
+  text-decoration: none;
+  font-size: larger;
+  padding: 5px;
+  display: block;
+}
+
+/* Dropdown Styles */
+.dropdown-content {
+  display: block;
+  position: absolute;
+  background: white;
+  box-shadow: 0px 4px 6px rgba(0, 0, 0, 0.1);
+  min-width: 160px;
+  z-index: 1000;
+  top: 100%; /* Position dropdown below the parent */
+  left: 0;
+  border-radius: 5px;
+  padding: 5px 0;
+  text-align: left;
+}
+
+.dropdown-content li {
+  padding: 8px 12px;
+}
+
+.dropdown-content li a {
+  display: block;
+  padding-left: 10px;
+  color: black;
+}
+
+.dropdown-content li a:hover {
+  background: #f4f4f4;
+}
+
+/* Hide dropdown by default */
+.dropdown-content {
+  display: none;
+}
+
+/* Show dropdown when hovering */
+.dropdown:hover .dropdown-content {
+  display: block;
+}
+
+/* End of General Navbar Styling ------------------------------------------------------------------------------------------------------------*/
