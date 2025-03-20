@@ -53,6 +53,11 @@ def signup():
 
     return jsonify({"message": "User created successfully"}), 201
 
+@app.route("/api/", methods=["GET"])
+def api_root():
+    return jsonify({"message": "API Root - Available endpoints: /api/signup, /api/test"})
+
+
 @app.route('/api/test', methods=['GET'])
 def api_test():
     return jsonify({"message": "Hello from Flask!"})
