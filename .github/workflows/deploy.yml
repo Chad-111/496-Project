@@ -26,10 +26,10 @@ jobs:
             git pull origin main
 
             # Stop and remove any running containers
-            docker compose down
+            docker-compose down
 
             # Build and restart containers in detached mode (-d)
-            docker compose up -d --build
+            docker-compose up -d --build
 
             # Remove unused Docker images to free up space
             docker system prune -f
