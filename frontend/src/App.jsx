@@ -1,6 +1,7 @@
 import { BrowserRouter as Router, Routes, Route, Link } from "react-router-dom";
 import { useState } from "react";
 import Home from "./pages/Home";
+import Signup from "./pages/Signup";
 import MyTeam from "./pages/MyTeam";
 import LeagueHome from "./pages/League/LeagueHome";
   import LeagueSettings from "./pages/League/LeagueSettings";
@@ -59,6 +60,7 @@ function App() {
         {/* Page-Specific Content */}
         <Routes>
           <Route path="/" element={<Home />} />
+          <Route path="/signup" element={<Signup />} />
           <Route path="/my-team" element={<MyTeam />} />
             <Route path="/league/home" element={<LeagueHome />} />
             <Route path="/league/settings" element={<LeagueSettings />} />
